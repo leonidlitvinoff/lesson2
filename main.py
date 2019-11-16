@@ -1,30 +1,21 @@
 import sqlite3
 import sys
 
-from PyQt5.QtWidgets import QApplication, QWidget, QTableWidgetItem
-from PyQt5 import uic
+from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
+from design import Ui_Form
 
 
-class MyWidget(QWidget):
+
+class MyWidget(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui',self)
-        self.con = sqlite3.connect("coffee.sqlite")
-        self.titles = None
-        self.update_result()
+        self.setupUi(self)
+        self.pushButton.clicked.connect(self.printer)
 
-    def update_result(self):
-        cur = self.con.cursor()
-        # Получили результат запроса, который ввели в текстовое поле
-        result = cur.execute("Select * from Info").fetchall()
-        # Заполнили размеры таблицы
-        self.tableWidget.setRowCount(len(result))
-        self.tableWidget.setColumnCount(len(result[0]))
-        self.titles = [description[0] for description in cur.description]
-        # Заполнили таблицу полученными элементами
-        for i, elem in enumerate(result):
-            for j, val in enumerate(elem):
-                self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+    def printer(self):
+        text = ', '.join([self.buttonGroup.checkedButton().text(), self.buttonGroup_2.checkedButton().text(),
+                          self.buttonGroup_3.checkedButton().text()])
+        self.label.setText(text)
 
 
 app = QApplication(sys.argv)
